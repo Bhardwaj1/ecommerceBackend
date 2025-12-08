@@ -1,5 +1,5 @@
 const SubCategoryService = require("../services/productSubCategory.service");
-
+const mongoose = require("mongoose");
 exports.createProductSubCategory = async (req, res) => {
   try {
     const productSubCategory = await SubCategoryService.createSubCategory(
@@ -13,10 +13,21 @@ exports.createProductSubCategory = async (req, res) => {
 
 exports.getAllProductSubCategory = async (req, res) => {
   try {
-    const data = await SubCategoryService.getAllSubCategories();
-    res
-      .status(200)
-      .json({ success: true, count: data.length, data });
+    const { category } = req.query;
+
+    console.log({ category });
+
+    let data;
+    if (category) {
+      const categoryObj = mongoose.Types.ObjectId(category);
+      data = await SubCategoryService.getAllSubCategories({
+        productCategory: categoryObj,
+      });
+    } else {
+      data = await SubCategoryService.getAllSubCategories();
+    }
+
+    res.status(200).json({ success: true, count: data.length, data });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

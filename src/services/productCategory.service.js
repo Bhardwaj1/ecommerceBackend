@@ -5,11 +5,11 @@ exports.createCategory=(data)=>{
 }
 
 exports.getAllCategories = () => {
-  return ProductCategoryModel.find();
+  return ProductCategoryModel.find().lean();
 };
 
 exports.getCategoryById = (id) => {
-  return ProductCategoryModel.findById(id);
+  return ProductCategoryModel.findById(id).lean();
 };
 
 exports.updateCategory = (id, data) => {
