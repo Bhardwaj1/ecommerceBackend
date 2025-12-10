@@ -1,25 +1,25 @@
 const ProductSubCategoryModel = require("../models/productSubCategory.models");
-const mongoose = require("mongoose");
+
 exports.createSubCategory = async (data) => {
   const created = await ProductSubCategoryModel.create(data);
 
-  return await ProductSubCategoryModel.findById(created._id).populate(
+  return ProductSubCategoryModel.findById(created._id).populate(
     "productCategory"
   );
 };
 
-exports.getSubCategoriesByCategory = (categoryId) => {
-  return ProductSubCategoryModel.find({
-    productCategory: mongoose.Types.ObjectId(categoryId),
-  }).populate("productCategory");
+exports.getAllSubCategories = (filter = {}) => {
+  return ProductSubCategoryModel.find(filter).populate("productCategory");
 };
 
 exports.getSubCategoryById = (id) => {
-  return ProductSubCategoryModel.findById(id);
+  return ProductSubCategoryModel.findById(id).populate("productCategory");
 };
 
 exports.updateSubCategory = (id, data) => {
-  return ProductSubCategoryModel.findByIdAndUpdate(id, data, { new: true });
+  return ProductSubCategoryModel.findByIdAndUpdate(id, data, {
+    new: true,
+  }).populate("productCategory");
 };
 
 exports.deleteSubCategory = (id) => {

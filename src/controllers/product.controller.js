@@ -49,20 +49,44 @@ exports.getAllProductById = async (req, res) => {
 
 exports.updateProduct = async (req, res) => {
   try {
+    let finalImages = [];
+
+    // Keep existing images
+    if (req.body.existingImages) {
+      if (Array.isArray(req.body.existingImages)) {
+        finalImages = [...req.body.existingImages];
+      } else {
+        finalImages = [req.body.existingImages];
+      }
+    }
+
+    // Upload new images if available
+    if (req.files && req.files.length > 0) {
+      for (let file of req.files) {
+        const result = await cloudinary.uploader.upload(file.path, {
+          folder: "products",
+        });
+        finalImages.push(result.secure_url);
+      }
+    }
+
+    req.body.images = finalImages;
+
     const product = await ProductService.updateProductService(
       req.params.id,
       req.body
     );
+
     if (!product) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Product not found" });
+      return res.status(404).json({ success: false, message: "Product not found" });
     }
+
     res.status(200).json({ success: true, product });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 exports.deleteProduct = async (req, res) => {
   try {
